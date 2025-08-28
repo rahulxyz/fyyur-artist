@@ -5,6 +5,7 @@ from flask import render_template, request, flash
 from forms import *
 from models import Venue, Artist, Show
 
+
 @app.route("/shows")
 def shows():
     result = (
@@ -33,29 +34,31 @@ def shows():
     ]
     return render_template("pages/shows.html", shows=data)
 
-@app.route('/shows/create')
+
+@app.route("/shows/create")
 def create_shows():
-  form = ShowForm()
-  return render_template('forms/new_show.html', form=form)
+    form = ShowForm()
+    return render_template("forms/new_show.html", form=form)
 
-@app.route('/shows/create', methods=['POST'])
+
+@app.route("/shows/create", methods=["POST"])
 def create_show_submission():
-  try:
-      form = request.form
-      show = Show(
-          artist_id=form['artist_id'],
-          venue_id=form['venue_id'],
-          start_time=form['start_time']
-      )
+    try:
+        form = request.form
+        show = Show(
+            artist_id=form["artist_id"],
+            venue_id=form["venue_id"],
+            start_time=form["start_time"],
+        )
 
-      with app.app_context():
-        db.session.add(show)
-        db.session.commit()
-      flash('Show was successfully listed!')
-  except Exception as e:
-      db.session.rollback()
-      flash('Show was not listed!')
-      print(e)
-  finally:
-      db.session.close()
-  return render_template('pages/home.html')
+        with app.app_context():
+            db.session.add(show)
+            db.session.commit()
+        flash("Show was successfully listed!")
+    except Exception as e:
+        db.session.rollback()
+        flash("Show was not listed!")
+        print(e)
+    finally:
+        db.session.close()
+    return render_template("pages/home.html")
