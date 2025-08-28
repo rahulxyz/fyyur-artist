@@ -5,7 +5,8 @@ from flask import render_template, request, flash
 from forms import *
 from models import Venue, Artist, Show
 
-
+#  Shows
+#  ----------------------------------------------------------------
 @app.route("/shows")
 def shows():
     result = (
@@ -34,7 +35,8 @@ def shows():
     ]
     return render_template("pages/shows.html", shows=data)
 
-
+#  Create Shows
+#  ----------------------------------------------------------------
 @app.route("/shows/create")
 def create_shows():
     form = ShowForm()

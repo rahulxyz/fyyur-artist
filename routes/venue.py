@@ -7,6 +7,8 @@ from forms import *
 from datetime import datetime
 from sqlalchemy import func
 
+#  Venues
+#  ----------------------------------------------------------------
 @app.route("/venues")
 def venues():
     venue_show_count = (
@@ -153,7 +155,6 @@ def show_venue(venue_id):
 
 #  Create Venue
 #  ----------------------------------------------------------------
-
 @app.route("/venues/create", methods=["GET"])
 def create_venue_form():
     form = VenueForm()
@@ -206,7 +207,8 @@ def delete_venue(venue_id):
     finally:
         db.session.close()
 
-
+#  Update Venue
+#  ----------------------------------------------------------------
 @app.route("/venues/<int:venue_id>/edit", methods=["GET"])
 def edit_venue(venue_id):
     venue = Venue.query.get(venue_id)
