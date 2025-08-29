@@ -1,11 +1,12 @@
 from app import app, db
 from models import Artist, Show, Venue
 from dateutil import parser
-from flask import render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for
 from forms import *
 from datetime import datetime
 from sqlalchemy import func
 
+artist_bp = Blueprint("artist", __name__)
 #  Create Artist
 #  ----------------------------------------------------------------
 @app.route("/artists/create", methods=["GET"])

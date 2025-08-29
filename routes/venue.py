@@ -2,11 +2,12 @@ from app import app, db
 from models import Venue, Show, Artist
 
 from dateutil import parser
-from flask import render_template, request, flash, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from forms import *
 from datetime import datetime
 from sqlalchemy import func
 
+venue_bp = Blueprint("venue", __name__)
 #  Venues
 #  ----------------------------------------------------------------
 @app.route("/venues")

@@ -18,7 +18,11 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
 
 migrate = Migrate(app, db)
-from routes import artist, venue, show
+
+from routes import artist_bp, venue_bp, show_bp
+app.register_blueprint(artist_bp)
+app.register_blueprint(venue_bp)
+app.register_blueprint(show_bp)
 
 def format_datetime(value, format='medium'):
   date = parser.parse(value)

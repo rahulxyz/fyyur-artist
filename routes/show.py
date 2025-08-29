@@ -1,10 +1,11 @@
 from app import app, db
 from models import Show
 
-from flask import render_template, request, flash
+from flask import Blueprint, render_template, request, flash
 from forms import *
 from models import Venue, Artist, Show
 
+show_bp = Blueprint("show", __name__)
 #  Shows
 #  ----------------------------------------------------------------
 @app.route("/shows")
