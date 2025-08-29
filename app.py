@@ -1,7 +1,3 @@
-#----------------------------------------------------------------------------#
-# Imports
-#----------------------------------------------------------------------------#
-
 from dateutil import parser
 import babel
 from flask import Flask, render_template
@@ -33,15 +29,6 @@ def format_datetime(value, format='medium'):
   return babel.dates.format_datetime(date, format, locale='en')
 
 app.jinja_env.filters['datetime'] = format_datetime
-
-def print_data(key, data):
-   print(f"\n========={key}===========\n")
-   print(data)
-   print(f"\n========={key}===========\n")
-
-#----------------------------------------------------------------------------#
-# Controllers.
-#----------------------------------------------------------------------------#
 
 @app.route('/')
 def index():
