@@ -1,4 +1,4 @@
-from app import app, db
+from extensions import db
 from models import Artist, Show, Venue
 from dateutil import parser
 from flask import Blueprint, render_template, request, flash, redirect, url_for
@@ -6,16 +6,17 @@ from forms import *
 from datetime import datetime
 from sqlalchemy import func
 
-artist_bp = Blueprint("artist", __name__)
+artist_bp = Blueprint("artist", __name__, url_prefix='/artists')
+
 #  Create Artist
 #  ----------------------------------------------------------------
-@app.route("/artists/create", methods=["GET"])
+@artist_bp.route("/create", methods=["GET"])
 def create_artist_form():
     form = ArtistForm()
     return render_template("forms/new_artist.html", form=form)
 
 
-@app.route("/artists/create", methods=["POST"])
+@artist_bp.route("/create", methods=["POST"])
 def create_artist_submission():
     try:
         form = request.form
@@ -32,9 +33,9 @@ def create_artist_submission():
             website_link=form.get("website_link"),
         )
 
-        with app.app_context():
-            db.session.add(artist)
-            db.session.commit()
+        # with app.app_context():
+        db.session.add(artist)
+        db.session.commit()
         flash("Artist " + form["name"] + " was successfully listed!")
     except Exception as e:
         db.session.rollback()
@@ -48,14 +49,14 @@ def create_artist_submission():
 
 #  Artists
 #  ----------------------------------------------------------------
-@app.route("/artists")
+@artist_bp.route("/")
 def artists():
     results = Artist.query.with_entities(Artist.id, Artist.name).order_by("id").all()
     data = [{"id": r.id, "name": r.name} for r in results]
     return render_template("pages/artists.html", artists=data)
 
 
-@app.route("/artists/search", methods=["POST"])
+@artist_bp.route("/search", methods=["POST"])
 def search_artists():
     search_term = request.form.get("search_term", "")
     result = (
@@ -86,7 +87,7 @@ def search_artists():
     )
 
 
-@app.route("/artists/<int:artist_id>")
+@artist_bp.route("/<int:artist_id>")
 def show_artist(artist_id):
     artist_with_shows = (
         db.session.query(
@@ -153,7 +154,7 @@ def show_artist(artist_id):
 
 #  Update
 #  ----------------------------------------------------------------
-@app.route("/artists/<int:artist_id>/edit", methods=["GET"])
+@artist_bp.route("/<int:artist_id>/edit", methods=["GET"])
 def edit_artist(artist_id):
     artist = Artist.query.get(artist_id)
     form = ArtistForm(
@@ -174,7 +175,7 @@ def edit_artist(artist_id):
     return render_template("forms/edit_artist.html", form=form, artist=artist)
 
 
-@app.route("/artists/<int:artist_id>/edit", methods=["POST"])
+@artist_bp.route("/<int:artist_id>/edit", methods=["POST"])
 def edit_artist_submission(artist_id):
     try:
         form = request.form
@@ -189,8 +190,8 @@ def edit_artist_submission(artist_id):
         artist.website_link = form.get("website_link")
         artist.seeking_venue = form.get("seeking_venue") == "y"
         artist.seeking_description = form.get("seeking_description")
-        with app.app_context():
-            db.session.commit()
+        # with app.app_context():
+        db.session.commit()
 
     except Exception as e:
         db.session.rollback()

@@ -1,4 +1,5 @@
-from app import app, db
+from extensions import db
+
 from models import Venue, Show, Artist
 
 from dateutil import parser
@@ -7,10 +8,11 @@ from forms import *
 from datetime import datetime
 from sqlalchemy import func
 
-venue_bp = Blueprint("venue", __name__)
+venue_bp = Blueprint("venue", __name__, url_prefix='/venues')
+
 #  Venues
 #  ----------------------------------------------------------------
-@app.route("/venues")
+@venue_bp.route("/")
 def venues():
     venue_show_count = (
         db.session.query(
@@ -58,7 +60,7 @@ def venues():
     return render_template("pages/venues.html", areas=data)
 
 
-@app.route("/venues/search", methods=["POST"])
+@venue_bp.route("/search", methods=["POST"])
 def search_venues():
     search_term = request.form.get("search_term", "")
     venuesByName = (
@@ -89,7 +91,7 @@ def search_venues():
     )
 
 
-@app.route("/venues/<int:venue_id>")
+@venue_bp.route("/<int:venue_id>")
 def show_venue(venue_id):
     venue_with_shows = (
         db.session.query(
@@ -156,13 +158,13 @@ def show_venue(venue_id):
 
 #  Create Venue
 #  ----------------------------------------------------------------
-@app.route("/venues/create", methods=["GET"])
+@venue_bp.route("/create", methods=["GET"])
 def create_venue_form():
     form = VenueForm()
     return render_template("forms/new_venue.html", form=form)
 
 
-@app.route("/venues/create", methods=["POST"])
+@venue_bp.route("/create", methods=["POST"])
 def create_venue_submission():
     try:
         form = request.form
@@ -179,9 +181,9 @@ def create_venue_submission():
             seeking_talent=form.get("seeking_talent") == "y",
             website_link=form.get("website_link"),
         )
-        with app.app_context():
-            db.session.add(venue)
-            db.session.commit()
+        # with app.app_context():
+        db.session.add(venue)
+        db.session.commit()
         flash("Venue " + form["name"] + " was successfully listed!")
     except Exception as e:
         db.session.rollback()
@@ -191,7 +193,7 @@ def create_venue_submission():
     return render_template("pages/home.html")
 
 
-@app.route("/venues/<venue_id>", methods=["DELETE"])
+@venue_bp.route("/<venue_id>", methods=["DELETE"])
 def delete_venue(venue_id):
     if not venue_id:
         return jsonify({"success": False, "error": "Not found"}), 404
@@ -210,7 +212,7 @@ def delete_venue(venue_id):
 
 #  Update Venue
 #  ----------------------------------------------------------------
-@app.route("/venues/<int:venue_id>/edit", methods=["GET"])
+@venue_bp.route("/<int:venue_id>/edit", methods=["GET"])
 def edit_venue(venue_id):
     venue = Venue.query.get(venue_id)
     form = VenueForm(
@@ -231,7 +233,7 @@ def edit_venue(venue_id):
     return render_template("forms/edit_venue.html", form=form, venue=venue)
 
 
-@app.route("/venues/<int:venue_id>/edit", methods=["POST"])
+@venue_bp.route("/<int:venue_id>/edit", methods=["POST"])
 def edit_venue_submission(venue_id):
     try:
         form = request.form
@@ -248,8 +250,8 @@ def edit_venue_submission(venue_id):
         venue.website_link = form.get("website_link")
         venue.seeking_talent = form.get("seeking_talent") == "y"
         venue.seeking_description = form.get("seeking_description")
-        with app.app_context():
-            db.session.commit()
+        # with app.app_context():
+        db.session.commit()
     except:
         db.session.rollback()
     finally:

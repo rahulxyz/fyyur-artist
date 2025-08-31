@@ -1,14 +1,16 @@
-from app import app, db
+from extensions import db
+
 from models import Show
 
 from flask import Blueprint, render_template, request, flash
 from forms import *
 from models import Venue, Artist, Show
 
-show_bp = Blueprint("show", __name__)
+show_bp = Blueprint("show", __name__, url_prefix='/shows')
+
 #  Shows
 #  ----------------------------------------------------------------
-@app.route("/shows")
+@show_bp.route("/")
 def shows():
     result = (
         db.session.query(
@@ -38,13 +40,13 @@ def shows():
 
 #  Create Shows
 #  ----------------------------------------------------------------
-@app.route("/shows/create")
+@show_bp.route("/create")
 def create_shows():
     form = ShowForm()
     return render_template("forms/new_show.html", form=form)
 
 
-@app.route("/shows/create", methods=["POST"])
+@show_bp.route("/create", methods=["POST"])
 def create_show_submission():
     try:
         form = request.form
@@ -54,9 +56,9 @@ def create_show_submission():
             start_time=form["start_time"],
         )
 
-        with app.app_context():
-            db.session.add(show)
-            db.session.commit()
+        # with app.app_context():
+        db.session.add(show)
+        db.session.commit()
         flash("Show was successfully listed!")
     except Exception as e:
         db.session.rollback()

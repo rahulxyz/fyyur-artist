@@ -7,17 +7,17 @@ import logging
 from logging import Formatter, FileHandler
 from forms import *
 from flask_migrate import Migrate
+from extensions import db, migrate, moment
 
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
 
 app = Flask(__name__)
-moment = Moment(app)
+moment.init_app(app)
 app.config.from_object('config')
-db = SQLAlchemy(app)
-
-migrate = Migrate(app, db)
+db.init_app(app)
+migrate.init_app(app, db)
 
 from routes import artist_bp, venue_bp, show_bp
 app.register_blueprint(artist_bp)
